@@ -15,6 +15,7 @@ type CustomTypeValidator func(i interface{}, o interface{}) bool
 
 // ParamValidator is a wrapper for validator functions that accepts additional parameters.
 type ParamValidator func(str string, params ...string) bool
+
 type tagOptionsMap map[string]string
 
 // UnsupportedTypeError is a wrapper for reflect.Type
@@ -29,7 +30,7 @@ type stringValues []reflect.Value
 // ParamTagMap is a map of functions accept variants parameters
 var ParamTagMap = map[string]ParamValidator{
 	"length":       ByteLength,
-	"range":        Range,
+	"range":        RangeStr,
 	"runelength":   RuneLength,
 	"stringlength": StringLength,
 	"matches":      StringMatches,

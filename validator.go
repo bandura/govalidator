@@ -738,15 +738,31 @@ func StringLength(str string, params ...string) bool {
 	return false
 }
 
-// Range check string's length
-func Range(str string, params ...string) bool {
+// Range checks numeric's value is between min and max. Val can be striung, int, or float types
+func Range(val interface{}, min, max float64) bool {
+	var num float64
+	v := reflect.ValueOf(val)
+	switch v.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+			reflect.Float32,reflect.Float64:
+		num = val.(float64)
+	case reflect.String:
+		num, _ = ToFloat(val.(string))
+	default:
+		return false
+	}
+	return InRange(num, min, max)
+}
+
+// RangeStr check string's numeric value for between min and max
+func RangeStr(str string, params ...string) bool {
 	if len(params) == 2 {
 		value, _ := ToFloat(str)
 		min, _ := ToFloat(params[0])
 		max, _ := ToFloat(params[1])
 		return InRange(value, min, max)
 	}
-
 	return false
 }
 
@@ -884,7 +900,10 @@ func typeCheck(v reflect.Value, t reflect.StructField, o reflect.Value, options 
 				delete(options, validatorSpec)
 
 				switch v.Kind() {
-				case reflect.String:
+				case reflect.String,
+						reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+						reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+						reflect.Float32, reflect.Float64:
 					field := fmt.Sprint(v) // make value into string, then validate with regex
 					if result := validatefunc(field, ps[1:]...); (!result && !negate) || (result && negate) {
 						if customMsgExists {
