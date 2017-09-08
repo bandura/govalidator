@@ -3,6 +3,13 @@ package govalidator
 import (
 	"fmt"
 	"regexp"
+	"encoding/pem"
+	"crypto/x509"
+	"crypto/rsa"
+	"bytes"
+	"io/ioutil"
+	"encoding/base64"
+	"strconv"
 )
 
 type validateError struct {
@@ -53,4 +60,44 @@ func IsPassword(str string, min, max, groups int) (bool, error) {
 		return false, newErrorf("Password must contain %d charcter groups = lower case, upper case , numeric, and special characters", groups)
 	}
 	return true, nil
+}
+
+func IsRsaPub(str string, params ...string) bool {
+	if len(params) != 1 {
+		return false
+	}
+	keylen, err := strconv.ParseInt(params[0], 10, 16)
+	if err != nil {
+		return false
+	}
+	bb := bytes.NewBufferString(str)
+	pemBytes, err := ioutil.ReadAll(bb)
+	if err != nil {
+		return false
+	}
+	block, _ := pem.Decode(pemBytes)
+	if block != nil && block.Type != "PUBLIC KEY" {
+		return false
+	}
+	var der []byte
+
+	if block != nil {
+		der = block.Bytes
+	} else {
+		der, err = base64.StdEncoding.DecodeString(str)
+		if err != nil {
+			return false
+		}
+	}
+
+	key, err := x509.ParsePKIXPublicKey(der)
+	if err != nil {
+		return false
+	}
+	pubkey, ok := key.(*rsa.PublicKey)
+	if !ok {
+		return false
+	}
+	bitlen := len(pubkey.N.Bytes()) * 8
+	return bitlen == int(keylen)
 }
