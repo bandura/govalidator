@@ -16,6 +16,28 @@ func init() {
 	}))
 }
 
+func TestIsTimezone(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		param    string
+		expected bool
+	}{
+		{"America/Barbados", true},
+		{"Europe/Minsk", true},
+		{"Europe/Brussels", true},
+		{"America/Beluga", false},
+		{"foo/bar", false},
+		{"arghh", false},
+	}
+	for _, test := range tests {
+		actual := IsTimezone(test.param)
+		if actual != test.expected {
+			t.Errorf("Expected IsTimezone(%q) to be %v, got %v", test.param, test.expected, actual)
+		}
+	}
+}
+
 func TestIsAlpha(t *testing.T) {
 	t.Parallel()
 

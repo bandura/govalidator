@@ -14,6 +14,7 @@ import (
 	"time"
 	"unicode"
 	"unicode/utf8"
+	"github.com/bandura/timezone"
 )
 
 var (
@@ -558,6 +559,10 @@ func IsLatitude(str string) bool {
 // IsLongitude check if a string is valid longitude.
 func IsLongitude(str string) bool {
 	return rxLongitude.MatchString(str)
+}
+
+func IsTimezone(str string) bool {
+	return timezone.Exists(str)
 }
 
 func toJSONName(tag string) string {

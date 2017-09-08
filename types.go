@@ -124,6 +124,7 @@ var TagMap = map[string]Validator{
 	"ISO3166Alpha2":  IsISO3166Alpha2,
 	"ISO3166Alpha3":  IsISO3166Alpha3,
 	"ISO4217":        IsISO4217,
+	"timezone":		  IsTimezone,
 }
 
 // ISO3166Entry stores country codes
@@ -612,3 +613,5 @@ var ISO693List = []ISO693Entry{
 	{Alpha3bCode: "zha", Alpha2Code: "za", English: "Zhuang; Chuang"},
 	{Alpha3bCode: "zul", Alpha2Code: "zu", English: "Zulu"},
 }
+
+
